@@ -1,0 +1,7 @@
+dist/
+db/
+coverage/
+public/
+node_modules/
+archives/
+updates/

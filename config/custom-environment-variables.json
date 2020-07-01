@@ -1,0 +1,49 @@
+{
+  "app": {
+    "port": "APP_PORT"
+  },
+  "db": {
+    "host": "DB_HOST",
+    "user": "DB_USER",
+    "password": "DB_PASS",
+    "port": "DB_PORT",
+    "database": "DB_NAME"
+  },
+  "amqp": {
+    "connect": {
+      "urn": "AMQP_URN"
+    }
+  },
+  "jwt": {
+    "session": {
+      "secret": "JWT_INTERNAL_SECRET"
+    },
+    "device": {
+      "secret": "JWT_DEVICE_SECRET"
+    }
+  },
+  "auth": {
+    "telegram": {
+      "url": "AUTH_TELEGRAM_URL"
+    },
+    "email/password": {
+      "url": "AUTH_EMAIL_PASSWORD_URL"
+    },
+    "appId": "AUTH_APP_ID",
+    "appSecret": "AUTH_APP_SECRET"
+  },
+  "twilio": {
+    "accountSid": "TWILIO_ACCOUNT_SID",
+    "authToken": "TWILIO_AUTH_TOKEN",
+    "from": "TWILIO_FROM"
+  },
+  "first_transfer": {
+    "shaunID": "SHAUN_ID",
+    "currencyId": "FIRST_TRANSFER_CURRENCY_ID",
+    "amount": "FIRST_TRANSFER_AMOUNT",
+    "isActive": "FIRST_TRANSFER_IS_ACTIVE"
+  },
+  "mailgun": {
+    "apiKey": "MAILGUN_APIKEY"
+  }
+}

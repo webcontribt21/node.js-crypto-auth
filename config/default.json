@@ -1,0 +1,96 @@
+{
+  "app": {
+    "host": "0.0.0.0",
+    "port": 8008,
+    "cors": {
+      "origin": "*",
+      "methods": "GET,HEAD,PUT,PATCH,POST,DELETE",
+      "preflightContinue": false,
+      "optionsSuccessStatus": 204
+    }
+  },
+  "db": {
+    "dialect": "postgres",
+    "host": "localhost",
+    "user": "postgres",
+    "password": "",
+    "port": "5432",
+    "database": "trading_zoo_db"
+  },
+  "logging": {
+    "db": {
+      "console": true
+    }
+  },
+  "jwt": {
+    "session": {
+      "secret": "foobar123",
+      "issuer": "bct.trade",
+      "expiresIn": {
+        "trading": "24h",
+        "sensitive": "5m",
+        "updatesecondfactor": "5m"
+      }
+    },
+    "device": {
+      "secret": "device123",
+      "issuer": "bct.trade",
+      "expiresIn": "180d"
+    }
+  },
+  "amqp": {
+    "connect": {
+      "urn": "amqp://guest:guest@localhost:5672"
+    },
+    "exchanges": {
+      "UpdateUserBalancesRequest": {
+        "name": "BCT.exchange.UpdateUserBalancesRequest",
+        "type": "fanout",
+        "settings": {
+          "durable": false
+        }
+      }
+    },
+    "queues": {
+      "UpdateUserBalancesRequest": {
+        "name": "node-init-transfer-request",
+        "prefetch": 1,
+        "settings": {
+          "expires": 60000,
+          "maxLength": 10000,
+          "messageTtl": 600000,
+          "overflow": "drop-head",
+          "noAck": false
+        }
+      }
+    },
+    "bindings": [
+      {
+        "queue": "UpdateUserBalancesRequest",
+        "exchange": "UpdateUserBalancesRequest",
+        "cleanStart": false
+      }
+    ]
+  },
+  "twilio": {
+    "accountSid": "",
+    "authToken": "",
+    "from": "+12064892980",
+    "body": "Your verification code is"
+  },
+  "first_transfer": {
+    "shaunID": null,
+    "currencyId": "eth",
+    "amount": 5,
+    "isActive": true
+  },
+  "mailgun": {
+    "apiKey": "",
+    "domain": "bct.io",
+    "from": "terminal@bct.io"
+  },
+  "emailSecret": {
+    "generationNumber": 10,
+    "authHost": "https://login.bct.trade"
+  }
+}

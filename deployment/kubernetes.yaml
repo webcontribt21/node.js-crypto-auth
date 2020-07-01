@@ -1,0 +1,179 @@
+apiVersion: extensions/v1beta1
+kind: Deployment
+metadata:
+  annotations:
+    keel.sh/pollSchedule: "@every 1m"
+  labels:
+    keel.sh/policy: minor
+    keel.sh/trigger: poll
+  name: trading-zoo-auth
+  namespace: default
+spec:
+  replicas: 2
+  selector:
+    matchLabels:
+      app: trading-zoo-auth
+  strategy:
+    rollingUpdate:
+      maxSurge: 1
+      maxUnavailable: 1
+    type: RollingUpdate
+  template:
+    metadata:
+      labels:
+        app: trading-zoo-auth
+        bct.io/log: bunyan
+    spec:
+      containers:
+        - env:
+            - name: NODE_ENV
+              valueFrom:
+                secretKeyRef:
+                  key: name
+                  name: environment
+            - name: APP_PORT
+              value: "80"
+            - name: JWT_INTERNAL_SECRET
+              valueFrom:
+                secretKeyRef:
+                  key: internal-secret
+                  name: auth-jwt
+            - name: JWT_DEVICE_SECRET
+              valueFrom:
+                secretKeyRef:
+                  key: device-secret
+                  name: auth-jwt
+            - name: TWILIO_ACCOUNT_SID
+              valueFrom:
+                secretKeyRef:
+                  key: TWILIO_ACCOUNT_SID
+                  name: passport-app
+            - name: TWILIO_AUTH_TOKEN
+              valueFrom:
+                secretKeyRef:
+                  key: TWILIO_ACCOUNT_AUTH_TOKEN
+                  name: passport-app
+            - name: TWILIO_FROM
+              valueFrom:
+                secretKeyRef:
+                  key: TWILIO_FROM_NUMBER
+                  name: passport-app
+            - name: SHAUN_ID
+              valueFrom:
+                secretKeyRef:
+                  key: SHAUN_ID
+                  name: passport-app
+            - name: MAILGUN_APIKEY
+              valueFrom:
+                secretKeyRef:
+                  key: apiKey
+                  name: mailgun
+            - name: AUTH_URL
+              value: https://auth.qa.bct.trade/api/v1/oauth/getAccessTokenByProvider
+            - name: AUTH_APP_ID
+              value: ff03204ca75f72426b4439bb2ff4df5b1c44bc5d165260a82798951e5d9b48c1
+            - name: AUTH_APP_SECRET
+              value: ac8a8996bb87eb8287ec5a09cb12e1c24314f76fd16d167a969c480f1327c5e3
+            - name: AMQP_URN
+              valueFrom:
+                secretKeyRef:
+                  key: urn
+                  name: rabbitmq
+            - name: DB_HOST
+              valueFrom:
+                secretKeyRef:
+                  key: address
+                  name: db
+            - name: DB_USER
+              valueFrom:
+                secretKeyRef:
+                  key: user
+                  name: db
+            - name: DB_PASS
+              valueFrom:
+                secretKeyRef:
+                  key: password
+                  name: db
+            - name: DB_PORT
+              valueFrom:
+                secretKeyRef:
+                  key: port
+                  name: db
+            - name: DB_NAME
+              valueFrom:
+                secretKeyRef:
+                  key: database
+                  name: db
+            - name: STAKATER_ENVIRONMENT_SECRET
+              value: 95b6e1a6b3e92ea5a361b2a9b6aaac10f8ed0b2a
+            - name: STAKATER_RABBITMQ_SECRET
+              value: fde5a5a4f67112f0bba965e9ded5057b6144b72a
+            - name: STAKATER_PASSPORT_APP_SECRET
+              value: f9811a51584a2a8d74f3a32acfa8b259e885ca98
+            - name: STAKATER_AUTH_JWT_SECRET
+              value: 3299507eef1e032d36902806ea0955e08feb10a3
+            - name: STAKATER_DB_SECRET
+              value: 90d49eb5fba372c2abd3a9b518bc0bdb61f13f6b
+          image: 791495472660.dkr.ecr.us-west-2.amazonaws.com/trading/trading-zoo-auth:1.3.2
+          imagePullPolicy: IfNotPresent
+          name: login
+          ports:
+            - containerPort: 80
+              name: login
+              protocol: TCP
+          resources:
+            limits:
+              cpu: 400m
+              memory: 300M
+            requests:
+              cpu: 50m
+              memory: 150M
+          volumeMounts:
+            - mountPath: /usr/src/app/prod-keys
+              name: jwt-secret
+      volumes:
+        - name: jwt-secret
+          secret:
+            defaultMode: 420
+            secretName: auth-jwt
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: trading-zoo-auth
+  namespace: default
+spec:
+  selector:
+    app: trading-zoo-auth
+  ports:
+    - port: 80
+      targetPort: 80
+---
+apiVersion: extensions/v1beta1
+kind: Ingress
+metadata:
+  name: login
+  namespace: default
+spec:
+  rules:
+    - host: login.dev.bct.trade
+      http:
+        paths:
+          - backend:
+              serviceName: trading-zoo-auth
+              servicePort: 80
+            path: /
+    - host: login.bct.trade
+      http:
+        paths:
+          - backend:
+              serviceName: trading-zoo-auth
+              servicePort: 80
+            path: /
+  tls:
+    - hosts:
+        - login.dev.bct.trade
+      secretName: login-dev-bct-trade
+    - hosts:
+        - login.bct.trade
+      secretName: wildcard-bct-trade

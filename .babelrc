@@ -1,0 +1,27 @@
+{
+  "presets": [
+    ["@babel/preset-typescript"],
+    [
+      "@babel/preset-env",
+      {
+        "targets": {
+          "node": "10"
+        }
+      }
+    ]
+  ],
+  "plugins": [
+    ["istanbul"],
+    [
+      "source-map-support",
+      {
+        "sourceMaps": "inline"
+      }
+    ]
+  ],
+  "env": {
+    "test": {
+      "plugins": ["istanbul"]
+    }
+  }
+}

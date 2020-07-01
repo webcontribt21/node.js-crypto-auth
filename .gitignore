@@ -1,0 +1,7 @@
+.idea/
+node_modules/
+_db/db.conf
+config/local.json
+dist/
+reports/
+.nyc_output

@@ -1,0 +1,17 @@
+#!/bin/bash
+
+docker run -dit \
+  --name trading-zoo-login \
+  --restart=always \
+  --add-host rabbitmqd:10.100.10.80 \
+  -e NODE_ENV=production \
+  -e NODE_CONFIG_DIR=/usr/src/app/config \
+  -e AMQP_URN='' \
+  -e AUTH_URL='' \
+  -e AUTH_APP_ID='' \
+  -e AUTH_APP_SECRET='' \
+  -e TELEGRAM_BOT_TOKEN='' \
+  -e JWT_INTERNAL_SECRET='' \
+  -e APP_PORT='' \
+  -p 8007:8007 \
+  hub.cgblockchain.com/trading-zoo/login
